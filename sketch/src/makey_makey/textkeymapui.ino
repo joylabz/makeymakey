@@ -1,15 +1,22 @@
-int currentInput = 0;
-void changeCurrentInput(int direction) {
-  currentInput += direction;
-  if (currentInput < 0) {
-    currentInput = 0;
+// The basic idea is to always have a current input pin (currentInput)
+// Which the user can change the output key for. The user can cycle
+// Through the input pins, and once they have selected the pin they 
+// want to change, they can cycle through the output pins.
+
+int currentPin = 0;
+void changeCurrentPin(int direction) {
+  currentPin += direction;
+  if (currentPin < 0) {
+    currentPin = 0;
   }
-  if (currentInput >= NUM_INPUTS) {
-    currentInput = NUM_INPUTS - 1;
+  if (currentPin >= NUM_INPUTS) {
+    currentPin = NUM_INPUTS - 1;
   }
 }
-void changeCurrentInputValue(int direction) {
-  int currentKeyIndex = indexForCode(keyCodes[currentInput]);
+
+// This changes the keycode for the currently selected pin
+void changeCurrentPinKey(int direction) {
+  int currentKeyIndex = indexForCode(keyCodes[currentPin]);
   
   currentKeyIndex += direction;
   if (currentKeyIndex < 0) {
@@ -19,19 +26,19 @@ void changeCurrentInputValue(int direction) {
     currentKeyIndex = NUM_ALL_KEYS - 1;
   }
   
-  keyCodes[currentInput] = keyCodeForIndex(currentKeyIndex);
+  keyCodes[currentPin] = keyCodeForIndex(currentKeyIndex);
 }
 
 void right() {
-  changeCurrentInputValue(1); 
+  changeCurrentPinKey(1); 
 }
 void left() {
-  changeCurrentInputValue(-1);
+  changeCurrentPinKey(-1);
 }
 void up() {
-  changeCurrentInput(-1);
+  changeCurrentPin(-1);
 }
 void down() {
-  changeCurrentInput(1);
+  changeCurrentPin(1);
 }
 
