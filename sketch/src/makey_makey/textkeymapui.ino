@@ -50,9 +50,9 @@ void printCurrentPin() {
   typeString("\n");
 }
 
-
+int reprogramming = 1;
 void reprogramLoop() {
-  while (1) {
+  while (reprogramming) {
     updateMeasurementBuffers();
     updateBufferSums();
     updateBufferIndex();
@@ -60,6 +60,11 @@ void reprogramLoop() {
     updateInputStatesForReprogramming();
     addDelay();
   }
+}
+
+void doneReprogramming() {
+  writeKeyMap();
+  reprogramming = 0;
 }
 
 void pinPressed(int p) {
@@ -75,6 +80,9 @@ void pinPressed(int p) {
       break;
     case(3):
       right();
+      break;
+    case(4): // space... Also click, because they are shorted together ;-:
+      doneReprogramming();
       break;
   }
   printCurrentPin();
