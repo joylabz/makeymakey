@@ -23,8 +23,8 @@ int indexForCode(int code) {
 }
 char *keyNameForCode(int code) {
   int i = indexForCode(code);
-  if  i >= 0 {
-     return keyNameForIndex();
+  if (i >= 0) {
+     return keyNameForIndex(i);
   }
   return "NONE";
 }
