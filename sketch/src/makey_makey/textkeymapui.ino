@@ -50,6 +50,18 @@ void printCurrentPin() {
   typeString("\n");
 }
 
+
+void reprogramLoop() {
+  while (1) {
+    updateMeasurementBuffers();
+    updateBufferSums();
+    updateBufferIndex();
+  
+    updateInputStatesForReprogramming();
+    addDelay();
+  }
+}
+
 void pinPressed(int p) {
   switch (p) {
     case 0:
