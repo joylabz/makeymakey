@@ -1,10 +1,14 @@
 #include <avr/eeprom.h>
 extern int keyCodes[NUM_INPUTS];
-#define KEY_CODES_ADDR ((void*)1)
+
+uint8_t EEMEM hasSavedKeyCodes;
+int EEMEM nonVolatileKeyCodes[NUM_INPUTS];
+#define KEY_CODES_ADDR (&nonVolatileKeyCodes)
+
 
 void loadKeyMap() {
   // If the eeprom has never been set, it will be 255
-  uint8_t hasMap = eeprom_read_byte(0);
+  uint8_t hasMap = eeprom_read_byte(&hasSavedKeyCodes);
   if (hasMap != 255) {
     eeprom_read_block(keyCodes, KEY_CODES_ADDR, NUM_INPUTS * 2);
   }
@@ -21,5 +25,5 @@ void writeKeyMap() {
   eeprom_write_block(keyCodes, KEY_CODES_ADDR, NUM_INPUTS * 2);
   // Flag that we have written a keymap
   // We do this last so that an incomplete keymap is not accidentally read.
-  update_eeprom_byte(0, 0);
+  update_eeprom_byte(&hasSavedKeyCodes, 0);
 }
