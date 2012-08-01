@@ -42,3 +42,11 @@ void down() {
   changeCurrentPin(1);
 }
 
+
+void printCurrentPin() {
+  typeString(pinName(currentPin));
+  typeString(" is mapped to ");
+  typeString(keyNameForCode(keyCodes[currentPin]));
+  typeString("\n");
+}
+
