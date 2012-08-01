@@ -35,3 +35,17 @@ char *pinName(int pinnumber) {
   strcpy_P(pinbuffer, (char*)pgm_read_word(&(pinNames[pinnumber])));
   return pinbuffer;
 }
+
+void typeString(char *string) {
+  int i = 0;
+  while (string[i]) {
+    Keyboard.press(string[i]);
+    Keyboard.release(string[i]);
+  }
+}
+
+void typeStringLn(char *string) {
+  typeString(string);
+  Keyboard.press(KEY_RETURN);
+  Keyboard.release(KEY_RETURN);
+}
