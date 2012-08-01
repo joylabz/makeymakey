@@ -12,7 +12,6 @@ void loadKeyMap() {
 
 void update_eeprom_byte(uint8_t * addr, uint8_t data) {
   // This avoids unnecessary writing to eeprom, saving its lifespan
-  eeprom_read_block(0,0,0);
   if (data != eeprom_read_byte(addr)) {
     eeprom_write_byte(addr, data);
   }
