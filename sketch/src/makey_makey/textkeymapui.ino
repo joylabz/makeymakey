@@ -50,3 +50,41 @@ void printCurrentPin() {
   typeString("\n");
 }
 
+void pinPressed(int p) {
+  switch (p) {
+    case 0:
+      up();
+      break;
+    case(1):
+      down();
+      break;
+    case(2):
+      left();
+      break;
+    case(3):
+      right();
+      break;
+  }
+  printCurrentPin();
+}
+
+void updateInputStatesForReprogramming() {
+  inputChanged = false;
+  
+  for (int i=0; i<NUM_INPUTS; i++) {
+    inputs[i].prevPressed = inputs[i].pressed; // store previous pressed state (only used for mouse buttons)
+    if (inputs[i].pressed) {
+      if (inputs[i].bufferSum < releaseThreshold) {  
+        inputs[i].pressed = false;
+      }
+    }   
+    else if (!inputs[i].pressed) {
+      if (inputs[i].bufferSum > pressThreshold) {  // input becomes pressed
+        inputs[i].pressed = true; 
+      }
+    }
+    if (!inputs[i].prevPressed && inputs[i].pressed) {
+      pinPressed(i);
+    }
+  }
+}
