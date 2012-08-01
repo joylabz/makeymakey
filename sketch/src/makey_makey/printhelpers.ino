@@ -22,7 +22,9 @@ char *keyNameForCode(int code) {
   return "NONE";
 }
 
+char pinbuffer[30];
+
 char *pinName(int pinnumber) {
-  strcpy_P(buffer, (char*)pgm_read_word(&(pinNames[pinnumber])));
-  return buffer;
+  strcpy_P(pinbuffer, (char*)pgm_read_word(&(pinNames[pinnumber])));
+  return pinbuffer;
 }
