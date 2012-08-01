@@ -13,11 +13,18 @@ int keyCodeForIndex(int i) {
   return (int)keyNames[i * 2];
 }
 
-char *keyNameForCode(int code) {
+int indexForCode(int code) {
   for (int i = 0; i < NUM_ALL_KEYS; i++) {
     if (keyCodeForIndex(i) == code) {
-     return keyNameForIndex(i);
-    } 
+      return i;
+    }  
+  }
+  return -1;
+}
+char *keyNameForCode(int code) {
+  int i = indexForCode(code);
+  if  i >= 0 {
+     return keyNameForIndex();
   }
   return "NONE";
 }
