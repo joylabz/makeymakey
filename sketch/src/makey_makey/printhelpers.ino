@@ -21,6 +21,7 @@ int indexForCode(int code) {
   }
   return -1;
 }
+
 char *keyNameForCode(int code) {
   int i = indexForCode(code);
   if (i >= 0) {
@@ -37,11 +38,7 @@ char *pinName(int pinnumber) {
 }
 
 void typeString(char *string) {
-  int i = 0;
-  while (string[i]) {
-    Keyboard.press(string[i]);
-    Keyboard.release(string[i]);
-  }
+  Keyboard.print(string);
 }
 
 void typeStringLn(char *string) {
