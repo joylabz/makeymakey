@@ -50,22 +50,9 @@ void printCurrentPin() {
   typeString("\n");
 }
 
-int reprogramming = 1;
-void reprogramLoop() {
-  while (reprogramming) {
-    updateMeasurementBuffers();
-    updateBufferSums();
-    updateBufferIndex();
-  
-    updateInputStatesForReprogramming();
-    addDelay();
-  }
-}
 
-void doneReprogramming() {
-  writeKeyMap();
-  reprogramming = 0;
-}
+
+
 
 void pinPressed(int p) {
   switch (p) {
@@ -107,4 +94,39 @@ void updateInputStatesForReprogramming() {
       pinPressed(i);
     }
   }
+}
+
+bool checkForShort() {
+  pinMode(pinNumbers[4], OUTPUT);
+  digitalWrite(pinNumbers[4], HIGH);
+  boolean result = digitalRead(pinNumbers[5]);
+  digitalWrite(pinNumbers[4], LOW);
+  result = result & (!digitalRead(pinNumbers[5]));
+  digitalWrite(pinNumbers[4], HIGH);
+  result = result & digitalRead(pinNumbers[5]);
+
+// reset pin as input
+  pinMode(pinNumbers[4], INPUT);
+  digitalWrite(pinNumbers[4], LOW);
+
+  return 1;
+}
+
+int reprogramming = 1;
+void reprogramLoop() {
+  Keyboard.print("start loop
+//  reprogramming = checkForShort();
+  while (reprogramming) {
+    updateMeasurementBuffers();
+    updateBufferSums();
+    updateBufferIndex();
+  
+    updateInputStatesForReprogramming();
+    addDelay();
+  }
+}
+
+void doneReprogramming() {
+  writeKeyMap();
+  reprogramming = 0;
 }
