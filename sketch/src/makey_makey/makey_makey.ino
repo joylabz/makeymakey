@@ -127,6 +127,7 @@ void setup()
   initializeArduino();
   loadKeyMap();
   initializeInputs();
+  reprogramLoop();
 }
 
 ////////////////////
