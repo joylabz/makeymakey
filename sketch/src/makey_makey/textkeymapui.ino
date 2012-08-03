@@ -102,22 +102,55 @@ void checkForPressedPins() {
 }
 
 bool checkForShort() {
-  pinMode(pinNumbers[4], OUTPUT);
-  digitalWrite(pinNumbers[4], LOW);
-
-
+  // We are going to be reading from pin 5
   pinMode(pinNumbers[5], INPUT);
   digitalWrite(pinNumbers[5], LOW);
-  delay(100);
 
+
+  // set pin 4 to be a sync, so if touched to 5, 5 will go low:
+  pinMode(pinNumbers[4], OUTPUT);
+  digitalWrite(pinNumbers[4], LOW);
+  delay(1000);
   boolean result = !digitalRead(pinNumbers[5]); // should be 0
+
+  // now set pin 4 to input with pull up resistors, this will make 5 go high, if connected
+  // but it won't short anything ;-)
   pinMode(pinNumbers[4], INPUT);
   digitalWrite(pinNumbers[4], HIGH);
-  // should be 1 now
-  delay(100);
+  delay(1000);
+  result &= (digitalRead(pinNumbers[5])); // should be 1 now
 
-  result &= (digitalRead(pinNumbers[5]));
+
+  // Now we wait for you to let go
   
+  if (result) {
+    // Trick lights to go on 
+    inputs[4].pressed = 1;
+    inputs[5].pressed = 1; 
+    cycleLEDs();
+  // set pin 4 to be a sync, so if touched to 5, 5 will go low:
+  pinMode(pinNumbers[4], OUTPUT);
+  digitalWrite(pinNumbers[4], LOW);
+  delay(1000);
+
+    
+    int starttime = micros();
+    while(!digitalRead(pinNumbers[5])) {
+      cycleLEDs();
+
+      // wait
+      delay(100);
+      if (micros() - starttime > 15000000) {
+        // WAITED TOO LONG, must be accidental!
+        result = 0;
+        break;
+      }
+    }
+  }
+  
+  //reset pin4 back to input low
+  pinMode(pinNumbers[4], INPUT);
+  digitalWrite(pinNumbers[4], LOW);
 
   return result;
 }
