@@ -114,7 +114,6 @@ bool checkForShort() {
 
 int reprogramming = 1;
 void reprogramLoop() {
-  Keyboard.print("start loop
 //  reprogramming = checkForShort();
   while (reprogramming) {
     updateMeasurementBuffers();
