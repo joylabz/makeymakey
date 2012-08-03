@@ -121,6 +121,8 @@ void reprogramLoop() {
     updateBufferIndex();
   
     updateInputStatesForReprogramming();
+    updateOutLEDs();
+
     addDelay();
   }
 }
