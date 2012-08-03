@@ -123,7 +123,7 @@ bool checkForShort() {
 }
 int reprogramming = 1;
 void reprogramLoop() {
-//  reprogramming = checkForShort();
+  reprogramming = checkForShort();
 
   if(reprogramming) {
     printCurrentPin();
