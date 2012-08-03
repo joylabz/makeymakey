@@ -115,15 +115,21 @@ bool checkForShort() {
 int reprogramming = 1;
 void reprogramLoop() {
 //  reprogramming = checkForShort();
-  while (reprogramming) {
-    updateMeasurementBuffers();
-    updateBufferSums();
-    updateBufferIndex();
-  
-    updateInputStatesForReprogramming();
-    updateOutLEDs();
 
-    addDelay();
+  if(reprogramming) {
+    printCurrentPin();
+    while (reprogramming == 1) {
+      updateMeasurementBuffers();
+      updateBufferSums();
+      updateBufferIndex();
+    
+      updateInputStatesForReprogramming();
+      cycleLEDs();
+      updateOutLEDs();
+      addDelay();
+    }
+    // We need to re initialize with the new keycodes
+    initializeInputs();
   }
 }
 
