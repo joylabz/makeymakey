@@ -3,6 +3,10 @@
 // Through the input pins, and once they have selected the pin they 
 // want to change, they can cycle through the output pins.
 
+
+// If you want the ui to erase itself, define this:
+// #define BACKSPACE
+
 int currentPin = 0;
 void changeCurrentPin(int direction) {
   currentPin += direction;
@@ -44,6 +48,11 @@ void down() {
 
 
 void printCurrentPin() {
+  #ifdef BACKSPACE
+  for (int i=0; i < 60; i++) {
+    typeString("\b");
+  }
+  #endif
   typeString(pinName(currentPin));
   typeString(" is mapped to ");
   typeString(keyNameForCode(keyCodes[currentPin]));
