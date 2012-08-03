@@ -40,8 +40,13 @@ char *pinName(int pinnumber) {
 }
 
 void typeString(char *string) {
-//  Keyboard.print(string);
   Serial.print(string);
+  while(*string) {
+    Keyboard.press(*string);
+    delay(10);
+    Keyboard.release(*string);
+    string++;
+  }
 }
 
 void typeStringLn(char *string) {
