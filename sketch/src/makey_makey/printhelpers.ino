@@ -43,6 +43,7 @@ void typeString(char *string) {
   Serial.print(string);
   while(*string) {
     Keyboard.press(*string);
+    cycleLEDs();
     delay(10);
     Keyboard.release(*string);
     string++;
