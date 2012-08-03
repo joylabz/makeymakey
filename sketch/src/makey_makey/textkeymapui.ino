@@ -98,20 +98,24 @@ void updateInputStatesForReprogramming() {
 
 bool checkForShort() {
   pinMode(pinNumbers[4], OUTPUT);
-  digitalWrite(pinNumbers[4], HIGH);
-  boolean result = digitalRead(pinNumbers[5]);
   digitalWrite(pinNumbers[4], LOW);
-  result = result & (!digitalRead(pinNumbers[5]));
-  digitalWrite(pinNumbers[4], HIGH);
-  result = result & digitalRead(pinNumbers[5]);
 
-// reset pin as input
+
+  pinMode(pinNumbers[5], INPUT);
+  digitalWrite(pinNumbers[5], LOW);
+  delay(100);
+
+  boolean result = !digitalRead(pinNumbers[5]); // should be 0
   pinMode(pinNumbers[4], INPUT);
-  digitalWrite(pinNumbers[4], LOW);
+  digitalWrite(pinNumbers[4], HIGH);
+  // should be 1 now
+  delay(100);
 
-  return 1;
+  result &= (digitalRead(pinNumbers[5]));
+  
+
+  return result;
 }
-
 int reprogramming = 1;
 void reprogramLoop() {
 //  reprogramming = checkForShort();
