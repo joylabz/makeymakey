@@ -33,12 +33,14 @@ char *keyNameForCode(int code) {
 char pinbuffer[30];
 
 char *pinName(int pinnumber) {
-  strcpy_P(pinbuffer, (char*)pgm_read_word(&(pinNames[pinnumber])));
+  memcpy_P (pinbuffer, (void*)(pgm_read_word(&pin_funny[0]) + PIN_NAME_LENGTH*pinnumber), PIN_NAME_LENGTH);
+  pinbuffer[PIN_NAME_LENGTH] = 0;
   return pinbuffer;
 }
 
 void typeString(char *string) {
-  Keyboard.print(string);
+//  Keyboard.print(string);
+  Serial.print(string);
 }
 
 void typeStringLn(char *string) {
