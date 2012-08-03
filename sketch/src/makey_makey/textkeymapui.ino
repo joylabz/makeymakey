@@ -136,4 +136,5 @@ void reprogramLoop() {
 void doneReprogramming() {
   writeKeyMap();
   reprogramming = 0;
+  typeString("goodbye!");
 }
