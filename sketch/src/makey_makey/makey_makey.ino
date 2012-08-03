@@ -125,6 +125,7 @@ void setup()
 {
   danceLeds();
   initializeArduino();
+  loadKeyMap();
   initializeInputs();
 }
 
