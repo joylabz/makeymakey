@@ -139,6 +139,7 @@ void reprogramLoop() {
     }
     // We need to re initialize with the new keycodes
     initializeInputs();
+    danceLeds();
   }
 }
 
