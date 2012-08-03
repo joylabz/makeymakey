@@ -90,6 +90,11 @@ void updateInputStatesForReprogramming() {
         inputs[i].pressed = true; 
       }
     }
+  }
+}
+
+void checkForPressedPins() {
+  for (int i=0; i<NUM_INPUTS; i++) {
     if (!inputs[i].prevPressed && inputs[i].pressed) {
       pinPressed(i);
     }
@@ -126,10 +131,10 @@ void reprogramLoop() {
       updateMeasurementBuffers();
       updateBufferSums();
       updateBufferIndex();
-    
       updateInputStatesForReprogramming();
       cycleLEDs();
       updateOutLEDs();
+      checkForPressedPins();
       addDelay();
     }
     // We need to re initialize with the new keycodes
