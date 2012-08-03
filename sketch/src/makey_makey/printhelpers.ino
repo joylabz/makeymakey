@@ -5,12 +5,13 @@
 char buffer[30];
 
 char *keyNameForIndex(int i) {
-  strcpy_P(buffer, (char*)pgm_read_word(&(keyNames[i * 2 + 1]))); 
+  memcpy_P (buffer, (void*)(pgm_read_word(&allKeyNamesFunny[0]) + KEY_NAME_LENGTH * i), KEY_NAME_LENGTH);
+  buffer[KEY_NAME_LENGTH] = 0;
   return buffer;
 }
 
 int keyCodeForIndex(int i) {
-  return (int)keyNames[i * 2];
+  return (int) keyNames[i * 2];
 }
 
 int indexForCode(int code) {

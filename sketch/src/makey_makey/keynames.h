@@ -1,3 +1,110 @@
+prog_char allKeyNames[] PROGMEM = 
+  "0                 "
+  "1                 "
+  "2                 "
+  "3                 "
+  "4                 "
+  "5                 "
+  "6                 "
+  "7                 "
+  "8                 "
+  "9                 "
+  "a                 "
+  "b                 "
+  "c                 "
+  "d                 "
+  "e                 "
+  "f                 "
+  "g                 "
+  "h                 "
+  "i                 "
+  "j                 "
+  "k                 "
+  "l                 "
+  "m                 "
+  "n                 "
+  "o                 "
+  "p                 "
+  "q                 "
+  "r                 "
+  "s                 "
+  "t                 "
+  "u                 "
+  "v                 "
+  "w                 "
+  "x                 "
+  "y                 "
+  "z                 "
+  "A                 "
+  "B                 "
+  "C                 "
+  "D                 "
+  "E                 "
+  "F                 "
+  "G                 "
+  "H                 "
+  "I                 "
+  "J                 "
+  "K                 "
+  "L                 "
+  "M                 "
+  "N                 "
+  "O                 "
+  "P                 "
+  "Q                 "
+  "R                 "
+  "S                 "
+  "T                 "
+  "U                 "
+  "V                 "
+  "W                 "
+  "X                 "
+  "Y                 "
+  "Z                 "
+  "KEY_UP_ARROW      "
+  "KEY_DOWN_ARROW    "
+  "KEY_LEFT_ARROW    "
+  "KEY_RIGHT_ARROW   "
+  "SPACE             "
+  "MOUSE_MOVE_UP     "
+  "MOUSE_MOVE_DOWN   "
+  "MOUSE_MOVE_LEFT   "
+  "MOUSE_MOVE_RIGHT  "
+  "MOUSE_LEFT        "
+  "MOUSE_RIGHT       "
+  "KEY_LEFT_CTRL     "
+  "KEY_LEFT_SHIFT    "
+  "KEY_LEFT_ALT      "
+  "KEY_LEFT_GUI      "
+  "KEY_RIGHT_CTRL    "
+  "KEY_RIGHT_SHIFT   "
+  "KEY_RIGHT_ALT     "
+  "KEY_RIGHT_GUI     "
+  "KEY_BACKSPACE     "
+  "KEY_TAB           "
+  "KEY_RETURN        "
+  "KEY_ESC           "
+  "KEY_INSERT        "
+  "KEY_DELETE        "
+  "KEY_PAGE_UP       "
+  "KEY_PAGE_DOWN     "
+  "KEY_HOME          "
+  "KEY_END           "
+  "KEY_CAPS_LOCK     "
+  "KEY_F1            "
+  "KEY_F2            "
+  "KEY_F3            "
+  "KEY_F4            "
+  "KEY_F5            "
+  "KEY_F6            "
+  "KEY_F7            "
+  "KEY_F8            "
+  "KEY_F9            "
+  "KEY_F10           "
+  "KEY_F11           "
+  "KEY_F12           "
+;
+#define KEY_NAME_LENGTH 18
 prog_char key_0[]                       PROGMEM  =       "0                 ";
 prog_char key_1[]                       PROGMEM  =       "1                 ";
 prog_char key_2[]                       PROGMEM  =       "2                 ";
@@ -66,49 +173,52 @@ prog_char key_KEY_LEFT_ARROW[]          PROGMEM  =       "KEY_LEFT_ARROW    ";
 prog_char key_KEY_RIGHT_ARROW[]         PROGMEM  =       "KEY_RIGHT_ARROW   ";
 prog_char key_SPACE[]                   PROGMEM  =       "SPACE              ";
 prog_char key_MOUSE_MOVE_UP[]           PROGMEM  =       "MOUSE_MOVE_UP     ";
-prog_char key_MOUSE_MOVE_DOWN[]          =       "MOUSE_MOVE_DOWN   ";
-prog_char key_MOUSE_MOVE_LEFT[]          =       "MOUSE_MOVE_LEFT   ";
-prog_char key_MOUSE_MOVE_RIGHT[]         =       "MOUSE_MOVE_RIGHT  ";
-prog_char key_MOUSE_LEFT[]               =       "MOUSE_LEFT        ";
-prog_char key_MOUSE_RIGHT[]              =       "MOUSE_RIGHT       ";
-prog_char key_KEY_LEFT_CTRL[]            =       "KEY_LEFT_CTRL     ";
-prog_char key_KEY_LEFT_SHIFT[]           =       "KEY_LEFT_SHIFT    ";
-prog_char key_KEY_LEFT_ALT[]             =       "KEY_LEFT_ALT      ";
-prog_char key_KEY_LEFT_GUI[]             =       "KEY_LEFT_GUI      ";
-prog_char key_KEY_RIGHT_CTRL[]           =       "KEY_RIGHT_CTRL    ";
-prog_char key_KEY_RIGHT_SHIFT[]          =       "KEY_RIGHT_SHIFT   ";
-prog_char key_KEY_RIGHT_ALT[]            =       "KEY_RIGHT_ALT     ";
-prog_char key_KEY_RIGHT_GUI[]            =       "KEY_RIGHT_GUI     ";
-prog_char key_KEY_BACKSPACE[]            =       "KEY_BACKSPACE     ";
-prog_char key_KEY_TAB[]                  =       "KEY_TAB           ";
-prog_char key_KEY_RETURN[]               =       "KEY_RETURN        ";
-prog_char key_KEY_ESC[]                  =       "KEY_ESC           ";
-prog_char key_KEY_INSERT[]               =       "KEY_INSERT        ";
-prog_char key_KEY_DELETE[]               =       "KEY_DELETE        ";
-prog_char key_KEY_PAGE_UP[]              =       "KEY_PAGE_UP       ";
-prog_char key_KEY_PAGE_DOWN[]            =       "KEY_PAGE_DOWN     ";
-prog_char key_KEY_HOME[]                 =       "KEY_HOME          ";
-prog_char key_KEY_END[]                  =       "KEY_END           ";
-prog_char key_KEY_CAPS_LOCK[]            =       "KEY_CAPS_LOCK     ";
-prog_char key_KEY_F1[]                   =       "KEY_F1            ";
-prog_char key_KEY_F2[]                   =       "KEY_F2            ";
-prog_char key_KEY_F3[]                   =       "KEY_F3            ";
-prog_char key_KEY_F4[]                   =       "KEY_F4            ";
-prog_char key_KEY_F5[]                   =       "KEY_F5            ";
-prog_char key_KEY_F6[]                   =       "KEY_F6            ";
-prog_char key_KEY_F7[]                   =       "KEY_F7            ";
-prog_char key_KEY_F8[]                   =       "KEY_F8            ";
-prog_char key_KEY_F9[]                   =       "KEY_F9            ";
-prog_char key_KEY_F10[]                  =       "KEY_F10           ";
-prog_char key_KEY_F11[]                  =       "KEY_F11           ";
-prog_char key_KEY_F12[]                  =       "KEY_F12           ";
+prog_char key_MOUSE_MOVE_DOWN[]         PROGMEM  =       "MOUSE_MOVE_DOWN   ";
+prog_char key_MOUSE_MOVE_LEFT[]         PROGMEM  =       "MOUSE_MOVE_LEFT   ";
+prog_char key_MOUSE_MOVE_RIGHT[]        PROGMEM  =       "MOUSE_MOVE_RIGHT  ";
+prog_char key_MOUSE_LEFT[]              PROGMEM  =       "MOUSE_LEFT        ";
+prog_char key_MOUSE_RIGHT[]             PROGMEM  =       "MOUSE_RIGHT       ";
+prog_char key_KEY_LEFT_CTRL[]           PROGMEM  =       "KEY_LEFT_CTRL     ";
+prog_char key_KEY_LEFT_SHIFT[]          PROGMEM  =       "KEY_LEFT_SHIFT    ";
+prog_char key_KEY_LEFT_ALT[]            PROGMEM  =       "KEY_LEFT_ALT      ";
+prog_char key_KEY_LEFT_GUI[]            PROGMEM  =       "KEY_LEFT_GUI      ";
+prog_char key_KEY_RIGHT_CTRL[]          PROGMEM  =       "KEY_RIGHT_CTRL    ";
+prog_char key_KEY_RIGHT_SHIFT[]         PROGMEM  =       "KEY_RIGHT_SHIFT   ";
+prog_char key_KEY_RIGHT_ALT[]           PROGMEM  =       "KEY_RIGHT_ALT     ";
+prog_char key_KEY_RIGHT_GUI[]           PROGMEM  =       "KEY_RIGHT_GUI     ";
+prog_char key_KEY_BACKSPACE[]           PROGMEM  =       "KEY_BACKSPACE     ";
+prog_char key_KEY_TAB[]                 PROGMEM  =       "KEY_TAB           ";
+prog_char key_KEY_RETURN[]              PROGMEM  =       "KEY_RETURN        ";
+prog_char key_KEY_ESC[]                 PROGMEM  =       "KEY_ESC           ";
+prog_char key_KEY_INSERT[]              PROGMEM  =       "KEY_INSERT        ";
+prog_char key_KEY_DELETE[]              PROGMEM  =       "KEY_DELETE        ";
+prog_char key_KEY_PAGE_UP[]             PROGMEM  =       "KEY_PAGE_UP       ";
+prog_char key_KEY_PAGE_DOWN[]           PROGMEM  =       "KEY_PAGE_DOWN     ";
+prog_char key_KEY_HOME[]                PROGMEM  =       "KEY_HOME          ";
+prog_char key_KEY_END[]                 PROGMEM  =       "KEY_END           ";
+prog_char key_KEY_CAPS_LOCK[]           PROGMEM  =       "KEY_CAPS_LOCK     ";
+prog_char key_KEY_F1[]                  PROGMEM  =       "KEY_F1            ";
+prog_char key_KEY_F2[]                  PROGMEM  =       "KEY_F2            ";
+prog_char key_KEY_F3[]                  PROGMEM  =       "KEY_F3            ";
+prog_char key_KEY_F4[]                  PROGMEM  =       "KEY_F4            ";
+prog_char key_KEY_F5[]                  PROGMEM  =       "KEY_F5            ";
+prog_char key_KEY_F6[]                  PROGMEM  =       "KEY_F6            ";
+prog_char key_KEY_F7[]                  PROGMEM  =       "KEY_F7            ";
+prog_char key_KEY_F8[]                  PROGMEM  =       "KEY_F8            ";
+prog_char key_KEY_F9[]                  PROGMEM  =       "KEY_F9            ";
+prog_char key_KEY_F10[]                 PROGMEM  =       "KEY_F10           ";
+prog_char key_KEY_F11[]                 PROGMEM  =       "KEY_F11           ";
+prog_char key_KEY_F12[]                 PROGMEM  =       "KEY_F12           ";
+
 #define NUM_ALL_KEYS (104)
 
+PGM_P allKeyNamesFunny[] PROGMEM = {
+  allKeyNames
+};
 
 
-
-PROGMEM const char *keyNames[] = {
-(char*)'0'                       , key_0               ,
+PGM_P keyNames[] = {
+(PGM_P)'0'                       , key_0               ,
 (char*)'1'                       , key_1               ,
 (char*)'2'                       , key_2               ,
 (char*)'3'                       , key_3               ,
@@ -213,4 +323,110 @@ PROGMEM const char *keyNames[] = {
 (char*)KEY_F11                   , key_KEY_F11         ,
 (char*)KEY_F12                   , key_KEY_F12         ,
 };
+short allKeyCodes[] = {        
+'0'                       ,
+'1'                       ,
+'2'                       ,
+'3'                       ,
+'4'                       ,
+'5'                       ,
+'6'                       ,
+'7'                       ,
+'8'                       ,
+'9'                       ,
+'a'                       ,
+'b'                       ,
+'c'                       ,
+'d'                       ,
+'e'                       ,
+'f'                       ,
+'g'                       ,
+'h'                       ,
+'i'                       ,
+'j'                       ,
+'k'                       ,
+'l'                       ,
+'m'                       ,
+'n'                       ,
+'o'                       ,
+'p'                       ,
+'q'                       ,
+'r'                       ,
+'s'                       ,
+'t'                       ,
+'u'                       ,
+'v'                       ,
+'w'                       ,
+'x'                       ,
+'y'                       ,
+'z'                       ,
+'A'                       ,
+'B'                       ,
+'C'                       ,
+'D'                       ,
+'E'                       ,
+'F'                       ,
+'G'                       ,
+'H'                       ,
+'I'                       ,
+'J'                       ,
+'K'                       ,
+'L'                       ,
+'M'                       ,
+'N'                       ,
+'O'                       ,
+'P'                       ,
+'Q'                       ,
+'R'                       ,
+'S'                       ,
+'T'                       ,
+'U'                       ,
+'V'                       ,
+'W'                       ,
+'X'                       ,
+'Y'                       ,
+'Z'                       ,
+KEY_UP_ARROW              ,
+KEY_DOWN_ARROW            ,
+KEY_LEFT_ARROW            ,
+KEY_RIGHT_ARROW           ,
+' '                       ,
+MOUSE_MOVE_UP             ,
+MOUSE_MOVE_DOWN           ,
+MOUSE_MOVE_LEFT           ,
+MOUSE_MOVE_RIGHT          ,
+MOUSE_LEFT                ,
+MOUSE_RIGHT               ,
+KEY_LEFT_CTRL             ,
+KEY_LEFT_SHIFT            ,
+KEY_LEFT_ALT              ,
+KEY_LEFT_GUI              ,
+KEY_RIGHT_CTRL            ,
+KEY_RIGHT_SHIFT           ,
+KEY_RIGHT_ALT             ,
+KEY_RIGHT_GUI             ,
+KEY_BACKSPACE             ,
+KEY_TAB                   ,
+KEY_RETURN                ,
+KEY_ESC                   ,
+KEY_INSERT                ,
+KEY_DELETE                ,
+KEY_PAGE_UP               ,
+KEY_PAGE_DOWN             ,
+KEY_HOME                  ,
+KEY_END                   ,
+KEY_CAPS_LOCK             ,
+KEY_F1                    ,
+KEY_F2                    ,
+KEY_F3                    ,
+KEY_F4                    ,
+KEY_F5                    ,
+KEY_F6                    ,
+KEY_F7                    ,
+KEY_F8                    ,
+KEY_F9                    ,
+KEY_F10                   ,
+KEY_F11                   ,
+KEY_F12                   ,
+};                                
 
