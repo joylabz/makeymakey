@@ -9,7 +9,7 @@ void debug_end(void) {
 }
 
 boolean test_pin(int toggle_pin, int sense_pin) {
-  boolean return_val = false;
+  boolean return_val = true;
   
   // reset both pins
   set_highz(sense_pin);
@@ -21,13 +21,16 @@ boolean test_pin(int toggle_pin, int sense_pin) {
   digitalWrite(sense_pin, LOW);
   
   // verify sense pin is HIGH
-  return_val &= ( digitalRead(sense_pin) == true );
+  return_val &= ( digitalRead(sense_pin) == HIGH );
   
   // pull toggle pin low
   set_gnd(toggle_pin);
   
+  // wait for it to fall
+  delay(1);
+  
   // verify sense pin is LOW
-  return_val &= ( digitalRead(sense_pin) == false );
+  return_val = ( digitalRead(sense_pin) == LOW );
   
   // reset both pins
   set_highz(sense_pin);
@@ -94,10 +97,15 @@ boolean handle_command(String cmd) {
   }
   else if (cmd.startsWith("TESTPIN:")) {
     String both_pins_substr = cmd.substring(cmd.indexOf(":")+1);
-    int toggle_pin = parse_int_string(both_pins_substr.substring(0, cmd.indexOf(",")));
-    int sense_pin = parse_int_string(both_pins_substr.substring(cmd.indexOf(",")+1));
+    int toggle_pin = parse_int_string(both_pins_substr.substring(0, both_pins_substr.indexOf(",")));
+    int sense_pin = parse_int_string(both_pins_substr.substring(both_pins_substr.indexOf(",")+1));
     boolean testResult = test_pin(toggle_pin, sense_pin);
-    Serial.println(cmd+"substring:"+both_pins_substr+"==>"+testResult);
+    if (testResult) {
+      Serial.println(cmd+" ==> success");
+    }
+    else {
+      Serial.println(cmd+" ==> failure");
+    }
   }
   else if (cmd.startsWith("DANCE")) {
     Serial.println("dancing leds...");
