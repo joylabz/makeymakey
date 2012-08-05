@@ -45,8 +45,20 @@
 #define MOUSE_MOVE_LEFT     -3
 #define MOUSE_MOVE_RIGHT    -4
 
+// array of CPLEDs (charlieplexed LEDs)
+#define NUM_CHARLIEPLEXED_LEDS   6
+// convenience names for these LEDs (these better be <= NUM_CHARLIEPLEXED_LEDS-1)
+#define CPLED_UP                 0
+#define CPLED_DOWN               1
+#define CPLED_LEFT               2
+#define CPLED_RIGHT              3
+#define CPLED_SPACE              4
+#define CPLED_CLICK              5
+
 #include "settings.h"
-#include "post.h"
+#include "debug.h"
+#include "common.h"
+#include "charlie.h"
 
 /////////////////////////
 // STRUCT ///////////////
@@ -62,10 +74,11 @@ typedef struct {
   boolean isMouseMotion;
   boolean isMouseButton;
   boolean isKey;
-} 
-MakeyMakeyInput;
+} MakeyMakeyInput;
 
 MakeyMakeyInput inputs[NUM_INPUTS];
+CPLED charlieplexed_leds[NUM_CHARLIEPLEXED_LEDS];
+
 
 ///////////////////////////////////
 // VARIABLES //////////////////////
@@ -124,6 +137,7 @@ void updateOutLEDs();
 //////////////////////
 void setup()
 {
+  initialize_outputs();
   debug_start();
   listen_for_debug();
   debug_end();
@@ -185,6 +199,34 @@ void initializeArduino() {
   Mouse.begin();
 }
 
+void initialize_outputs(void) {
+    // set up our charlieplexed LEDs
+    
+    charlieplexed_leds[CPLED_UP].vcc_pin = inputLED_b;
+    charlieplexed_leds[CPLED_UP].ignore_pins[0] = inputLED_a;
+    charlieplexed_leds[CPLED_UP].gnd_pin = inputLED_c;
+    
+    charlieplexed_leds[CPLED_DOWN].vcc_pin = inputLED_a;
+    charlieplexed_leds[CPLED_DOWN].ignore_pins[0] = inputLED_c;
+    charlieplexed_leds[CPLED_DOWN].gnd_pin = inputLED_b;
+    
+    charlieplexed_leds[CPLED_LEFT].vcc_pin = inputLED_b;
+    charlieplexed_leds[CPLED_LEFT].ignore_pins[0] = inputLED_c;
+    charlieplexed_leds[CPLED_LEFT].gnd_pin = inputLED_a;
+    
+    charlieplexed_leds[CPLED_RIGHT].vcc_pin = inputLED_c;
+    charlieplexed_leds[CPLED_RIGHT].ignore_pins[0] = inputLED_a;
+    charlieplexed_leds[CPLED_RIGHT].gnd_pin = inputLED_b;
+    
+    charlieplexed_leds[CPLED_SPACE].vcc_pin = inputLED_c;
+    charlieplexed_leds[CPLED_SPACE].ignore_pins[0] = inputLED_b;
+    charlieplexed_leds[CPLED_SPACE].gnd_pin = inputLED_a;
+    
+    charlieplexed_leds[CPLED_CLICK].vcc_pin = inputLED_a;
+    charlieplexed_leds[CPLED_CLICK].ignore_pins[0] = inputLED_b;
+    charlieplexed_leds[CPLED_CLICK].gnd_pin = inputLED_c;
+}
+  
 ///////////////////////////
 // INITIALIZE INPUTS
 ///////////////////////////
@@ -593,53 +635,27 @@ void danceLeds()
   int delayTime = 50;
   int delayTime2 = 100;
 
-//////////////
-  pinMode(inputLED_a, INPUT);
-  pinMode(inputLED_b, INPUT);
-  pinMode(inputLED_c, INPUT);
-  digitalWrite(inputLED_a, LOW);
-  digitalWrite(inputLED_b, LOW);
-  digitalWrite(inputLED_c, LOW);
-//////////////
+  set_highz(inputLED_a);
+  set_highz(inputLED_b);
+  set_highz(inputLED_c);
 
   // CIRCLE
   for(int i=0; i<4; i++)
   {
     // UP
-    pinMode(inputLED_a, INPUT);
-    digitalWrite(inputLED_a, HIGH);
-    pinMode(inputLED_b, OUTPUT);
-    digitalWrite(inputLED_b, HIGH);
-    pinMode(inputLED_c, OUTPUT);
-    digitalWrite(inputLED_c, LOW);
+    cpled_set(charlieplexed_leds[CPLED_UP], HIGH);
     delay(delayTime);
 
     //RIGHT
-    pinMode(inputLED_a, INPUT);
-    digitalWrite(inputLED_a, LOW);
-    pinMode(inputLED_b, OUTPUT);
-    digitalWrite(inputLED_b, LOW);
-    pinMode(inputLED_c, OUTPUT);
-    digitalWrite(inputLED_c, HIGH);
+    cpled_set(charlieplexed_leds[CPLED_RIGHT], HIGH);
     delay(delayTime);
    
-
     // DOWN
-    pinMode(inputLED_a, OUTPUT);
-    digitalWrite(inputLED_a, HIGH);
-    pinMode(inputLED_b, OUTPUT);
-    digitalWrite(inputLED_b, LOW);
-    pinMode(inputLED_c, INPUT);
-    digitalWrite(inputLED_c, LOW);
+    cpled_set(charlieplexed_leds[CPLED_DOWN], HIGH);
     delay(delayTime);
 
     // LEFT
-    pinMode(inputLED_a, OUTPUT);
-    digitalWrite(inputLED_a, LOW);
-    pinMode(inputLED_b, OUTPUT);
-    digitalWrite(inputLED_b, HIGH);
-    pinMode(inputLED_c, INPUT);
-    digitalWrite(inputLED_c, LOW);
+    cpled_set(charlieplexed_leds[CPLED_LEFT], HIGH);
     delay(delayTime    );    
   }    
 
@@ -647,23 +663,17 @@ void danceLeds()
   for(int i=0; i<4; i++)
   {
     // SPACE
-    pinMode(inputLED_a, OUTPUT);
-    digitalWrite(inputLED_a, HIGH);
-    pinMode(inputLED_b, INPUT);
-    digitalWrite(inputLED_b, LOW);
-    pinMode(inputLED_c, OUTPUT);
-    digitalWrite(inputLED_c, LOW);
+    cpled_set(charlieplexed_leds[CPLED_SPACE], HIGH);
     delay(delayTime2);    
 
     // CLICK
-    pinMode(inputLED_a, OUTPUT);
-    digitalWrite(inputLED_a, LOW);
-    pinMode(inputLED_b, INPUT);
-    digitalWrite(inputLED_b, LOW);
-    pinMode(inputLED_c, OUTPUT);
-    digitalWrite(inputLED_c, HIGH);
+    cpled_set(charlieplexed_leds[CPLED_CLICK], HIGH);
     delay(delayTime2);    
   }
+  
+  set_highz(inputLED_a);
+  set_highz(inputLED_b);
+  set_highz(inputLED_c);
 }
 
 void updateOutLEDs()

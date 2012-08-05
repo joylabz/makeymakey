@@ -13,6 +13,15 @@ def validate_keys(serial_port):
 def random_str(length=5):
     return base64.urlsafe_b64encode(os.urandom(length))[:length]
 
+"""
+#define CPLED_UP                 0
+#define CPLED_DOWN               1
+#define CPLED_LEFT               2
+#define CPLED_RIGHT              3
+#define CPLED_SPACE              4
+#define CPLED_CLICK              5
+"""
+
 def shellmode(serial_port):
     print "entering shell mode..."
     print ">>>",
