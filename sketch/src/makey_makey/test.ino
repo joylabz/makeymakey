@@ -1,3 +1,4 @@
+#include "test.h"
 
 void debug_start(void) {
   Serial.begin(9600);
@@ -27,7 +28,7 @@ boolean test_pin(int toggle_pin, int sense_pin) {
   set_gnd(toggle_pin);
   
   // wait for it to fall
-  delay(1);
+  delay(2);
   
   // verify sense pin is LOW
   return_val = ( digitalRead(sense_pin) == LOW );
@@ -86,14 +87,24 @@ boolean handle_command(String cmd) {
   if (cmd.startsWith("LEDON:")) {
     String led_num_substr = cmd.substring(cmd.indexOf(":")+1);
     int led_num = parse_int_string(led_num_substr);
-    led_on(led_num);
-    Serial.println("LEDON: "+String(led_num));
+    boolean led_status = led_on(led_num);
+    if (led_status) {
+      Serial.println(cmd+" ==> success");
+    }
+    else {
+      Serial.println(cmd+" ==> failure");
+    }
   }
   else if (cmd.startsWith("LEDOFF:")) {
     String led_num_substr = cmd.substring(cmd.indexOf(":")+1);
     int led_num = parse_int_string(led_num_substr);
-    led_off(led_num);
-    Serial.println("LEDOFF: "+String(led_num));
+    boolean led_status = led_off(led_num);
+    if (led_status) {
+      Serial.println(cmd+" ==> success");
+    }
+    else {
+      Serial.println(cmd+" ==> failure");
+    }
   }
   else if (cmd.startsWith("TESTPIN:")) {
     String both_pins_substr = cmd.substring(cmd.indexOf(":")+1);
@@ -108,11 +119,11 @@ boolean handle_command(String cmd) {
     }
   }
   else if (cmd.startsWith("DANCE")) {
-    Serial.println("dancing leds...");
     danceLeds();
+    Serial.println(cmd+" ==> success");
   }
   else if (cmd.equals("EXIT")) {
-    Serial.println("MakeyMakey exiting debug mode...");
+    Serial.println(cmd+" ==> success");
     return false;
   }
   return true;
@@ -143,7 +154,7 @@ void listen_for_debug(void) {
       if (cmd == "DEBUG") {
         in_debug_mode = true;
         ms_waited = DEBUG_WAIT_TIME_MS+1; // don't let us hit this again.
-        Serial.println("IN DEBUG MODE!");
+        Serial.println("DEBUGOK");
       }
       else {
        in_debug_mode = handle_command(cmd);

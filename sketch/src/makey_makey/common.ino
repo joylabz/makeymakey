@@ -12,5 +12,5 @@ void set_gnd(byte pin) {
 
 void set_highz(byte pin) {
     pinMode(pin, INPUT);  
-    digitalWrite(pin, HIGH);
+    digitalWrite(pin, LOW);
 }

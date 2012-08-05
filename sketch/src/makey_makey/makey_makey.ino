@@ -56,7 +56,7 @@
 #define CPLED_CLICK              5
 
 #include "settings.h"
-#include "debug.h"
+#include "test.h"
 #include "common.h"
 #include "charlie.h"
 
@@ -78,7 +78,7 @@ typedef struct {
 
 MakeyMakeyInput inputs[NUM_INPUTS];
 CPLED charlieplexed_leds[NUM_CHARLIEPLEXED_LEDS];
-
+byte cpled_states[NUM_CHARLIEPLEXED_LEDS];
 
 ///////////////////////////////////
 // VARIABLES //////////////////////
@@ -119,6 +119,7 @@ int loopCounter = 0;
 ///////////////////////////
 // FUNCTION PROTOTYPES ////
 ///////////////////////////
+void initialize_outputs(void);
 void initializeArduino();
 void initializeInputs();
 void updateMeasurementBuffers();
@@ -161,14 +162,14 @@ void loop()
   updateOutLEDs();
   addDelay();
 }
-
+           
 //////////////////////////
 // INITIALIZE ARDUINO
 //////////////////////////
 void initializeArduino() {
-//#ifdef DEBUG
-//  Serial.begin(9600);  // Serial for debugging
-//#endif
+#ifdef DEBUG
+  Serial.begin(9600);  // Serial for debugging
+#endif
 
   /* Set up input pins 
    DEactivate the internal pull-ups, since we're using external resistors */
@@ -187,12 +188,11 @@ void initializeArduino() {
 }
 
 void initialize_outputs(void) {
-    // set up our charlieplexed LEDs
-    
+    // set up our charlieplexed LED structs
     charlieplexed_leds[CPLED_UP].vcc_pin = inputLED_b;
     charlieplexed_leds[CPLED_UP].ignore_pins[0] = inputLED_a;
     charlieplexed_leds[CPLED_UP].gnd_pin = inputLED_c;
-    
+
     charlieplexed_leds[CPLED_DOWN].vcc_pin = inputLED_a;
     charlieplexed_leds[CPLED_DOWN].ignore_pins[0] = inputLED_c;
     charlieplexed_leds[CPLED_DOWN].gnd_pin = inputLED_b;
@@ -212,6 +212,14 @@ void initialize_outputs(void) {
     charlieplexed_leds[CPLED_CLICK].vcc_pin = inputLED_a;
     charlieplexed_leds[CPLED_CLICK].ignore_pins[0] = inputLED_b;
     charlieplexed_leds[CPLED_CLICK].gnd_pin = inputLED_c;
+    
+    // initialize cpled state buffer
+    cpled_states[CPLED_UP] = 0;
+    cpled_states[CPLED_DOWN] = 0;
+    cpled_states[CPLED_LEFT] = 0;
+    cpled_states[CPLED_RIGHT] = 0;
+    cpled_states[CPLED_SPACE] = 0;
+    cpled_states[CPLED_CLICK] = 0;
     
     set_highz(inputLED_a);
     set_highz(inputLED_b);
@@ -233,10 +241,10 @@ void initializeInputs() {
   pressThreshold = int(thresholdCenter + pressThresholdAmount);
   releaseThreshold = int(thresholdCenter - pressThresholdAmount);
 
-//#ifdef DEBUG
-//  Serial.println(pressThreshold);
-//  Serial.println(releaseThreshold);
-//#endif
+#ifdef DEBUG
+  Serial.println(pressThreshold);
+  Serial.println(releaseThreshold);
+#endif
 
   for (int i=0; i<NUM_INPUTS; i++) {
     inputs[i].pinNumber = pinNumbers[i];
@@ -256,9 +264,9 @@ void initializeInputs() {
     inputs[i].isKey = false;
 
     if (inputs[i].keyCode < 0) {
-//#ifdef DEBUG_MOUSE
-//      Serial.println("GOT IT");  
-//#endif
+#ifdef DEBUG_MOUSE
+      Serial.println("GOT IT");  
+#endif
 
       inputs[i].isMouseMotion = true;
     } 
@@ -268,14 +276,14 @@ void initializeInputs() {
     else {
       inputs[i].isKey = true;
     }
-//#ifdef DEBUG
-//    Serial.println(i);
-//#endif
+#ifdef DEBUG
+    Serial.println(i);
+#endif
 
   }
 }
 
-
+          
 //////////////////////////////
 // UPDATE MEASUREMENT BUFFERS
 //////////////////////////////
@@ -372,11 +380,11 @@ void updateInputStates() {
       }
     }
   }
-//#ifdef DEBUG3
-//  if (inputChanged) {
-//    Serial.println("change");
-//  }
-//#endif
+#ifdef DEBUG3
+  if (inputChanged) {
+    Serial.println("change");
+  }
+#endif
 }
 
 /*
@@ -462,9 +470,9 @@ void sendMouseMovementEvents() {
   mouseMovementCounter %= MOUSE_MOTION_UPDATE_INTERVAL;
   if (mouseMovementCounter == 0) {
     for (int i=0; i<NUM_INPUTS; i++) {
-//#ifdef DEBUG_MOUSE
-//      Serial.println(inputs[i].isMouseMotion);  
-//#endif
+#ifdef DEBUG_MOUSE
+      Serial.println(inputs[i].isMouseMotion);  
+#endif
 
       if (inputs[i].isMouseMotion) {
         if (inputs[i].pressed) {
@@ -544,14 +552,14 @@ void addDelay() {
 
   prevTime = micros();
 
-//#ifdef DEBUG_TIMING
-//  if (loopCounter == 0) {
-//    int t = micros()-prevTime;
-//    Serial.println(t);
-//  }
-//  loopCounter++;
-//  loopCounter %= 999;
-//#endif
+#ifdef DEBUG_TIMING
+  if (loopCounter == 0) {
+    int t = micros()-prevTime;
+    Serial.println(t);
+  }
+  loopCounter++;
+  loopCounter %= 999;
+#endif
 
 }
 
@@ -586,6 +594,7 @@ void cycleLEDs() {
   }
 
 }
+
 
 ///////////////////////////
 // DANCE LEDS
@@ -648,11 +657,11 @@ void updateOutLEDs()
       if (inputs[i].isKey)
       {
         keyPressed = 1;
-//#ifdef DEBUG
-//        Serial.print("Key ");
-//        Serial.print(i);
-//        Serial.println(" pressed");
-//#endif
+#ifdef DEBUG
+        Serial.print("Key ");
+        Serial.print(i);
+        Serial.println(" pressed");
+#endif
       }
       else
       {
