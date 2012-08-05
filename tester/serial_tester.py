@@ -162,7 +162,7 @@ def dance_leds(serial_port):
 
 def exit_test_mode(serial_port):
     msg = build_exit_msg()
-    print "exiting test mode...",
+    print "exiting test mode and booting the MM...",
     serial_port.write(msg)
     succeeded = parse_exit_response(serial_port.readline().strip())
     print "OK" if succeeded else "FAILED"
