@@ -76,8 +76,13 @@ def parse_pintest_response(response_str):
         succeeded = False
     return pins, succeeded
 
+def parse_ledtest_response(response_str):
+    pass
+
 def test_leds(serial_port):
-    
+    for cpled in charlieplexed_leds:
+        pass
+
 def test_backside_km_pins(serial_port):
     failures = []
     test_message = "TESTPIN:%s,%s\n"
@@ -94,7 +99,7 @@ def test_backside_km_pins(serial_port):
     if failures:
         print "The following pins FAILED:"
         for pin_pair in failures:
-            print "\t%s" % pin_pair
+            print "\t(%s,%s)" % pin_pair
 
 def main():
     """
