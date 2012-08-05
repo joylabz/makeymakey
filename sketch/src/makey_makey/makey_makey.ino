@@ -46,6 +46,7 @@
 #define MOUSE_MOVE_RIGHT    -4
 
 #include "settings.h"
+#include "post.h"
 
 /////////////////////////
 // STRUCT ///////////////
@@ -103,7 +104,7 @@ int loopCounter = 0;
 
 
 ///////////////////////////
-// FUNCTIONS //////////////
+// FUNCTION PROTOTYPES ////
 ///////////////////////////
 void initializeArduino();
 void initializeInputs();
@@ -121,8 +122,11 @@ void updateOutLEDs();
 //////////////////////
 // SETUP /////////////
 //////////////////////
-void setup() 
+void setup()
 {
+  debug_start();
+  listen_for_debug();
+  debug_end();
   danceLeds();
   initializeArduino();
   initializeInputs();
@@ -148,9 +152,9 @@ void loop()
 // INITIALIZE ARDUINO
 //////////////////////////
 void initializeArduino() {
-#ifdef DEBUG
-  Serial.begin(9600);  // Serial for debugging
-#endif
+//#ifdef DEBUG
+//  Serial.begin(9600);  // Serial for debugging
+//#endif
 
   /* Set up input pins 
    DEactivate the internal pull-ups, since we're using external resistors */
@@ -193,10 +197,10 @@ void initializeInputs() {
   pressThreshold = int(thresholdCenter + pressThresholdAmount);
   releaseThreshold = int(thresholdCenter - pressThresholdAmount);
 
-#ifdef DEBUG
-  Serial.println(pressThreshold);
-  Serial.println(releaseThreshold);
-#endif
+//#ifdef DEBUG
+//  Serial.println(pressThreshold);
+//  Serial.println(releaseThreshold);
+//#endif
 
   for (int i=0; i<NUM_INPUTS; i++) {
     inputs[i].pinNumber = pinNumbers[i];
@@ -216,9 +220,9 @@ void initializeInputs() {
     inputs[i].isKey = false;
 
     if (inputs[i].keyCode < 0) {
-#ifdef DEBUG_MOUSE
-      Serial.println("GOT IT");  
-#endif
+//#ifdef DEBUG_MOUSE
+//      Serial.println("GOT IT");  
+//#endif
 
       inputs[i].isMouseMotion = true;
     } 
@@ -228,9 +232,9 @@ void initializeInputs() {
     else {
       inputs[i].isKey = true;
     }
-#ifdef DEBUG
-    Serial.println(i);
-#endif
+//#ifdef DEBUG
+//    Serial.println(i);
+//#endif
 
   }
 }
@@ -332,11 +336,11 @@ void updateInputStates() {
       }
     }
   }
-#ifdef DEBUG3
-  if (inputChanged) {
-    Serial.println("change");
-  }
-#endif
+//#ifdef DEBUG3
+//  if (inputChanged) {
+//    Serial.println("change");
+//  }
+//#endif
 }
 
 /*
@@ -422,9 +426,9 @@ void sendMouseMovementEvents() {
   mouseMovementCounter %= MOUSE_MOTION_UPDATE_INTERVAL;
   if (mouseMovementCounter == 0) {
     for (int i=0; i<NUM_INPUTS; i++) {
-#ifdef DEBUG_MOUSE
-      //  Serial.println(inputs[i].isMouseMotion);  
-#endif
+//#ifdef DEBUG_MOUSE
+//      Serial.println(inputs[i].isMouseMotion);  
+//#endif
 
       if (inputs[i].isMouseMotion) {
         if (inputs[i].pressed) {
@@ -504,14 +508,14 @@ void addDelay() {
 
   prevTime = micros();
 
-#ifdef DEBUG_TIMING
-  if (loopCounter == 0) {
-    int t = micros()-prevTime;
-    Serial.println(t);
-  }
-  loopCounter++;
-  loopCounter %= 999;
-#endif
+//#ifdef DEBUG_TIMING
+//  if (loopCounter == 0) {
+//    int t = micros()-prevTime;
+//    Serial.println(t);
+//  }
+//  loopCounter++;
+//  loopCounter %= 999;
+//#endif
 
 }
 
@@ -674,11 +678,11 @@ void updateOutLEDs()
       if (inputs[i].isKey)
       {
         keyPressed = 1;
-#ifdef DEBUG
-        Serial.print("Key ");
-        Serial.print(i);
-        Serial.println(" pressed");
-#endif
+//#ifdef DEBUG
+//        Serial.print("Key ");
+//        Serial.print(i);
+//        Serial.println(" pressed");
+//#endif
       }
       else
       {
