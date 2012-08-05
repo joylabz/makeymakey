@@ -12,10 +12,8 @@ boolean test_pin(int toggle_pin, int sense_pin) {
   boolean return_val = false;
   
   // reset both pins
-  pinMode(sense_pin, INPUT);
-  digitalWrite(sense_pin, LOW);
-  pinMode(toggle_pin, INPUT);
-  digitalWrite(toggle_pin, LOW);
+  set_highz(sense_pin);
+  set_highz(toggle_pin);
   
   // put sense_pin in input mode
   // no internal pullup because we have externals on the board
@@ -26,31 +24,32 @@ boolean test_pin(int toggle_pin, int sense_pin) {
   return_val &= ( digitalRead(sense_pin) == true );
   
   // pull toggle pin low
-  pinMode(toggle_pin, OUTPUT);
-  digitalWrite(toggle_pin, LOW);
+  set_gnd(toggle_pin);
   
   // verify sense pin is LOW
   return_val &= ( digitalRead(sense_pin) == false );
   
   // reset both pins
-  pinMode(sense_pin, INPUT);
-  digitalWrite(sense_pin, LOW);
-  pinMode(toggle_pin, INPUT);
-  digitalWrite(toggle_pin, LOW);
+  set_highz(sense_pin);
+  set_highz(toggle_pin);
   
   return return_val;
 }
 
 boolean led_on(int led_num) {
-  // TODO: assert led_num
-  pinMode(led_num, OUTPUT);
-  digitalWrite(led_num, HIGH);
+    if (led_num < 0 || led_num >= NUM_CHARLIEPLEXED_LEDS) {
+      return false;
+    }
+    cpled_set(charlieplexed_leds[led_num], HIGH);
+    return true;
 }
 
 boolean led_off(int led_num) {
-  // TODO: assert led_num
-  pinMode(led_num, INPUT);
-  digitalWrite(led_num, LOW);
+    if (led_num < 0 || led_num >= NUM_CHARLIEPLEXED_LEDS) {
+      return false;
+    }
+    cpled_set(charlieplexed_leds[led_num], LOW);
+    return true;
 }
 
 void reset_pin(int pin_num) {
@@ -79,6 +78,7 @@ boolean handle_command(String cmd) {
   /* 
    * Parse and execute commands. Return false when it's
    * time to exit debug mode.
+   * TODO: rewrite this to use char* instead of string you lazybones
    */
   if (cmd.startsWith("LEDON:")) {
     String led_num_substr = cmd.substring(cmd.indexOf(":")+1);
@@ -123,8 +123,8 @@ String get_command(void) {
 
 void listen_for_debug(void) {
   /* 
-   * enable serial input and listen for a "POST" command
-   * if none is recieved after POST_WAIT_TIME_MS boot the sketch
+   * enable serial input and listen for a "DEBUG" command
+   * if none is recieved after DEBUG_WAIT_TIME_MS boot the sketch
    * else jump to debug mode
    */
   int ms_waited = 0;
@@ -134,7 +134,7 @@ void listen_for_debug(void) {
       String cmd = get_command();
       if (cmd == "DEBUG") {
         in_debug_mode = true;
-        ms_waited = DEBUG_WAIT_TIME_MS+1; // don't want to hit this again.
+        ms_waited = DEBUG_WAIT_TIME_MS+1; // don't let us hit this again.
         Serial.println("IN DEBUG MODE!");
       }
       else {

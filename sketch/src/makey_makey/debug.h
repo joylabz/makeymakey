@@ -1,8 +1,6 @@
 #include "Arduino.h"
 
-#define NUM_INPUTS 18
-#define NUM_LEDS 2
-#define DEBUG_WAIT_TIME_MS 5000
+#define DEBUG_WAIT_TIME_MS 5000 /* how long (in ms) the board will listen on bootup for a DEBUG signal before starting the sketch */
 #define MAX_CMD_LENGTH 15
 
 
