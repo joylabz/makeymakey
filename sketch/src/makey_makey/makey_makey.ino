@@ -178,19 +178,6 @@ void initializeArduino() {
     digitalWrite(pinNumbers[i], LOW);
   }
 
-  pinMode(inputLED_a, INPUT);
-  pinMode(inputLED_b, INPUT);
-  pinMode(inputLED_c, INPUT);
-  digitalWrite(inputLED_a, LOW);
-  digitalWrite(inputLED_b, LOW);
-  digitalWrite(inputLED_c, LOW);
-
-  pinMode(outputK, OUTPUT);
-  pinMode(outputM, OUTPUT);
-  digitalWrite(outputK, LOW);
-  digitalWrite(outputM, LOW);
-
-
 #ifdef DEBUG
   delay(4000); // allow us time to reprogram in case things are freaking out
 #endif
@@ -225,6 +212,13 @@ void initialize_outputs(void) {
     charlieplexed_leds[CPLED_CLICK].vcc_pin = inputLED_a;
     charlieplexed_leds[CPLED_CLICK].ignore_pins[0] = inputLED_b;
     charlieplexed_leds[CPLED_CLICK].gnd_pin = inputLED_c;
+    
+    set_highz(inputLED_a);
+    set_highz(inputLED_b);
+    set_highz(inputLED_c);
+   
+    set_gnd(outputK);
+    set_gnd(outputM);
 }
   
 ///////////////////////////
@@ -565,64 +559,30 @@ void addDelay() {
 // CYCLE LEDS
 ///////////////////////////
 void cycleLEDs() {
-  pinMode(inputLED_a, INPUT);
-  pinMode(inputLED_b, INPUT);
-  pinMode(inputLED_c, INPUT);
-  digitalWrite(inputLED_a, LOW);
-  digitalWrite(inputLED_b, LOW);
-  digitalWrite(inputLED_c, LOW);
+  set_highz(inputLED_a);
+  set_highz(inputLED_b);
+  set_highz(inputLED_c);
 
   ledCycleCounter++;
-  ledCycleCounter %= 6;
+    ledCycleCounter %= 6;
 
   if ((ledCycleCounter == 0) && inputs[0].pressed) {
-    pinMode(inputLED_a, INPUT);
-    digitalWrite(inputLED_a, HIGH);
-    pinMode(inputLED_b, OUTPUT);
-    digitalWrite(inputLED_b, HIGH);
-    pinMode(inputLED_c, OUTPUT);
-    digitalWrite(inputLED_c, LOW);
+    cpled_set(charlieplexed_leds[CPLED_UP], HIGH);
   }
   if ((ledCycleCounter == 1) && inputs[1].pressed) {
-    pinMode(inputLED_a, OUTPUT);
-    digitalWrite(inputLED_a, HIGH);
-    pinMode(inputLED_b, OUTPUT);
-    digitalWrite(inputLED_b, LOW);
-    pinMode(inputLED_c, INPUT);
-    digitalWrite(inputLED_c, LOW);
-
+    cpled_set(charlieplexed_leds[CPLED_DOWN], HIGH);
   }
   if ((ledCycleCounter == 2) && inputs[2].pressed) {
-    pinMode(inputLED_a, OUTPUT);
-    digitalWrite(inputLED_a, LOW);
-    pinMode(inputLED_b, OUTPUT);
-    digitalWrite(inputLED_b, HIGH);
-    pinMode(inputLED_c, INPUT);
-    digitalWrite(inputLED_c, LOW);
+    cpled_set(charlieplexed_leds[CPLED_LEFT], HIGH);
   }
   if ((ledCycleCounter == 3) && inputs[3].pressed) {
-    pinMode(inputLED_a, INPUT);
-    digitalWrite(inputLED_a, LOW);
-    pinMode(inputLED_b, OUTPUT);
-    digitalWrite(inputLED_b, LOW);
-    pinMode(inputLED_c, OUTPUT);
-    digitalWrite(inputLED_c, HIGH);
+    cpled_set(charlieplexed_leds[CPLED_RIGHT], HIGH);
   }
   if ((ledCycleCounter == 4) && inputs[4].pressed) {
-    pinMode(inputLED_a, OUTPUT);
-    digitalWrite(inputLED_a, LOW);
-    pinMode(inputLED_b, INPUT);
-    digitalWrite(inputLED_b, LOW);
-    pinMode(inputLED_c, OUTPUT);
-    digitalWrite(inputLED_c, HIGH);
+    cpled_set(charlieplexed_leds[CPLED_SPACE], HIGH);
   }
   if ((ledCycleCounter == 5) && inputs[5].pressed) {
-    pinMode(inputLED_a, OUTPUT);
-    digitalWrite(inputLED_a, HIGH);
-    pinMode(inputLED_b, INPUT);
-    digitalWrite(inputLED_b, LOW);
-    pinMode(inputLED_c, OUTPUT);
-    digitalWrite(inputLED_c, LOW);
+    cpled_set(charlieplexed_leds[CPLED_CLICK], HIGH);
   }
 
 }
