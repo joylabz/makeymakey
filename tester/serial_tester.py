@@ -274,6 +274,7 @@ def main():
     print "waiting for MakeyMakey on %s" % options.serial_dev
     while 1:
         if not os.path.exists(options.serial_dev):
+            time.sleep(.01)
             continue
         else:
             try:
