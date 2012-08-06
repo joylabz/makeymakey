@@ -9,6 +9,7 @@ import string
 import random
 import logging
 import optparse
+import platform
 
 import serial
 
@@ -246,13 +247,27 @@ def main():
     """
     parser = optparse.OptionParser(usage="usage: %prog -s <serial_device>")
     parser.add_option("-s", "--serial_dev",
-                      metavar="serial_dev", help="full path to serial device", default='/dev/tty.usbmodemfd121')
+                      metavar="serial_dev", help="full path to serial device", default=False)
     parser.add_option("-e", "--shell_mode",
                     metavar="shell_mode", help="dump to shell mode after testing", default=False, action="store_true")
 
     (options, _) = parser.parse_args()
     if not options.serial_dev:
-        parser.error("you must specify a serial port!")
+        if platform.system() == "Darwin":
+            print "no serial port specified, please unplug and then plug in MakeyMakey"
+            lastpaths = set(os.listdir("/dev/"))
+            while not options.serial_dev:
+                curpaths = set(os.listdir("/dev/"))
+                newpaths = curpaths - lastpaths
+                lastpaths = curpaths
+                for path in newpaths:
+                    if "tty" in path:
+                        options.serial_dev = "/dev/" + path
+                        print "possibly detected port successfully! %s " % options.serial_dev
+                        break
+                time.sleep(.01)
+        else:
+            parser.error("you must specify a serial port!")
 
     # loop, looking for a device on our port
     # when we see one, open the port and put the device in debug mode
