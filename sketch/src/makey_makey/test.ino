@@ -30,8 +30,19 @@ boolean test_pin(int toggle_pin, int sense_pin) {
   // wait for it to fall
   delay(2);
   
+  // verify that all other inputs are STILL HIGH!
+  for (int i=0; i<NUM_INPUTS; i++) {
+    int otherPin = pinNumbers[i];
+    if (otherPin == toggle_pin || otherPin == sense_pin) {
+      continue;
+    }
+    else {
+      return_val &= ( digitalRead(otherPin) == HIGH );
+    }
+  }
+  
   // verify sense pin is LOW
-  return_val = ( digitalRead(sense_pin) == LOW );
+  return_val &= ( digitalRead(sense_pin) == LOW );
   
   // reset both pins
   set_highz(sense_pin);
