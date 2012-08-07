@@ -4,9 +4,6 @@
 import os
 import re
 import time
-import base64
-import string
-import random
 import logging
 import optparse
 import platform
@@ -71,9 +68,6 @@ charlieplexed_leds = {
     "SPACE"   :4,
     "CLICK"   :5,
 }
-
-def random_str(length=5):
-    return base64.urlsafe_b64encode(os.urandom(length))[:length]
 
 def shellmode(serial_port):
     prompt = "(MM shell) >>>"
@@ -219,7 +213,6 @@ def disconnect_mm(serial_port):
     exit_success = exit_test_mode(serial_port)
     if not exit_success:
         print "Exiting test mode FAILED"
-    serial_port.close()
 
 # WAIT FOR KEYS
 # def ask_for_key():
@@ -253,7 +246,7 @@ def main():
 
     (options, _) = parser.parse_args()
     if not options.serial_dev:
-        if platform.system() == "Darwin":
+        if platform.system() in ("Darwin", "Linux"):
             print "no serial port specified, please unplug and then plug in MakeyMakey"
             lastpaths = set(os.listdir("/dev/"))
             while not options.serial_dev:
@@ -280,11 +273,13 @@ def main():
             try:
                 serial_port = serial.Serial(options.serial_dev, 9600, timeout=.2)
                 if enter_debug_mode(serial_port):
-                    test_mm(serial_port)
+                    test_result = test_mm(serial_port)
                     if options.shell_mode:
                         shellmode(serial_port)
                     else:
-                        disconnect_mm(serial_port)
+                        if test_result:
+                            disconnect_mm(serial_port)
+                        serial_port.close()
                     wait_for_disconnect(options.serial_dev)
                 else:
                     continue
