@@ -157,7 +157,7 @@ def dance_leds(serial_port):
 
 def exit_test_mode(serial_port):
     msg = build_exit_msg()
-    print "exiting test mode and booting the MM...",
+    print "exiting test mode...",
     serial_port.write(msg)
     succeeded = parse_exit_response(serial_port.readline().strip())
     print "OK" if succeeded else "FAILED"
@@ -209,10 +209,12 @@ def test_mm(serial_port):
     
     return (failed_pinpairs or failed_leds)
 
-def disconnect_mm(serial_port):
+def exit_test_and_boot_mm(serial_port):
     exit_success = exit_test_mode(serial_port)
     if not exit_success:
         print "Exiting test mode FAILED"
+    else:
+        print "Booted MM!"
 
 # WAIT FOR KEYS
 # def ask_for_key():
@@ -273,12 +275,12 @@ def main():
             try:
                 serial_port = serial.Serial(options.serial_dev, 9600, timeout=.2)
                 if enter_debug_mode(serial_port):
-                    test_result = test_mm(serial_port)
+                    failed_test = test_mm(serial_port)
                     if options.shell_mode:
                         shellmode(serial_port)
                     else:
-                        if test_result:
-                            disconnect_mm(serial_port)
+                        if not failed_test:
+                            exit_test_and_boot_mm(serial_port)
                         serial_port.close()
                     wait_for_disconnect(options.serial_dev)
                 else:
