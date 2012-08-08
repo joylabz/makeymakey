@@ -193,21 +193,22 @@ def test_leds(serial_port):
         if not (succeeded and succeeded2):
             failed_leds.append((pin, ledname))
     return failed_leds
-                
+
 def test_mm(serial_port):
     failed_pinpairs = test_input_pins(serial_port)
     failed_leds = test_leds(serial_port)
+
     if failed_pinpairs:
         print "The following pins FAILED:"
         for pinpair,name in failed_pinpairs:
             print "\t%3i ==> %3i (%s)" % (pinpair[0],pinpair[1],name)
-            
+
     if failed_leds:
         print "The following LEDs FAILED:"
         for pin,ledname in failed_leds:
             print "\t%i (%s)" % (pin, ledname)
-    
-    return (failed_pinpairs or failed_leds)
+
+    return not (failed_pinpairs or failed_leds)
 
 def exit_test_and_boot_mm(serial_port):
     exit_success = exit_test_mode(serial_port)
@@ -216,11 +217,31 @@ def exit_test_and_boot_mm(serial_port):
     else:
         print "Booted MM!"
 
-# WAIT FOR KEYS
-# def ask_for_key():
-# def wait_for_keys():
-#     print "press UP"
-    
+# ripped from fabric, then modified a bit
+def confirm(question, default=True, use_suffix=True):
+    # Set up suffix
+    if default and use_suffix:
+        suffix = "[Y/n]"
+    elif use_suffix:
+        suffix = "[y/N]"
+    else:
+        suffix = ""
+    # Loop till we get something we like
+    while True:
+        response = raw_input("%s %s" % (question, suffix)).lower()
+        # Default
+        if not response:
+            return default
+        # Yes
+        if response in ['y', 'yes']:
+            return True
+        # No
+        if response in ['n', 'no']:
+            return False
+        print "RESPONSE",response
+        # Didn't get empty, yes or no, so complain and loop
+        print("I didn't understand you. Please specify '(y)es' or '(n)o'.")
+
 def enter_debug_mode(serial_port):
     serial_port.write("DEBUG")
     response = serial_port.readline().strip()
@@ -275,11 +296,11 @@ def main():
             try:
                 serial_port = serial.Serial(options.serial_dev, 9600, timeout=.2)
                 if enter_debug_mode(serial_port):
-                    failed_test = test_mm(serial_port)
+                    test_result = test_mm(serial_port)
                     if options.shell_mode:
                         shellmode(serial_port)
                     else:
-                        if not failed_test:
+                        if test_result:
                             exit_test_and_boot_mm(serial_port)
                         serial_port.close()
                     wait_for_disconnect(options.serial_dev)
