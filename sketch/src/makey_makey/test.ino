@@ -1,13 +1,6 @@
 #include "test.h"
 
-void debug_start(void) {
-  Serial.begin(9600);
-  Serial.setTimeout(100);
-}
-
-void debug_end(void) {
-  Serial.end();
-}
+int testpin_map[24];
 
 boolean test_pin(int toggle_pin, int sense_pin) {
   boolean return_val = true;
@@ -15,22 +8,24 @@ boolean test_pin(int toggle_pin, int sense_pin) {
   // reset both pins
   set_highz(sense_pin);
   set_highz(toggle_pin);
-  
+    
   // put sense_pin in input mode
   // no internal pullup because we have externals on the board
   pinMode(sense_pin, INPUT);
   digitalWrite(sense_pin, LOW);
   
+  delay(2); // wait for pins to settle
+
   // verify sense pin is HIGH
   return_val &= ( digitalRead(sense_pin) == HIGH );
   
   // pull toggle pin low
   set_gnd(toggle_pin);
   
-  // wait for it to fall
-  delay(2);
+  delay(2); // wait for pins to settle
   
   // verify that all other inputs are STILL HIGH!
+  // if they're not, this could indicate a short
   for (int i=0; i<NUM_INPUTS; i++) {
     int otherPin = pinNumbers[i];
     if (otherPin == toggle_pin || otherPin == sense_pin) {
@@ -48,6 +43,8 @@ boolean test_pin(int toggle_pin, int sense_pin) {
   set_highz(sense_pin);
   set_highz(toggle_pin);
   
+  delay(2); // wait for pins to settle
+
   return return_val;
 }
 
@@ -72,106 +69,89 @@ void reset_pin(int pin_num) {
   digitalWrite(pin_num, LOW);
 }
 
-//void reset_all_pins() {
-//  // turn off all LEDs
-//  for (int i = 0; i < NUM_LEDS; i++) {
-//    reset_pin(leds[i]);
-//  }
-//  // make all inputs, well, inputs :)
-//  for (int i = 0; i < NUM_INPUTS; i++) {
-//    reset_pin(inputs[i]);
-//  }
-//}
+void init_testpin_map(void) {
+    testpin_map[0] = 18;            // D0 => A0
+    testpin_map[1] = 19;            // D1 => A1
+    testpin_map[2] = 20;            // D2 => A2
+    testpin_map[3] = 21;            // D3 => A3
+    testpin_map[4] = 22;            // D4 => A4
+    testpin_map[5] = 23;            // D5 => A5
+                                    //
+    testpin_map[18] = 0;            // A0 => D0
+    testpin_map[19] = 1;            // A1 => D1
+    testpin_map[20] = 2;            // A2 => D2
+    testpin_map[21] = 3;            // A3 => D3
+    testpin_map[22] = 4;            // A4 => D4
+    testpin_map[23] = 5;            // a5 => D5
 
-int parse_int_string(String int_string) {
-    char int_buf[int_string.length()+1];
-    int_string.toCharArray(int_buf, sizeof(int_buf));
-    return atoi(int_buf);
+    testpin_map[12] = 8;
+    testpin_map[8] =  12;
+    // left/right
+    testpin_map[13] = 15;
+    testpin_map[15] = 13;
+    // space/click
+    testpin_map[7] = 6;
+    testpin_map[6] = 7;
+    
 }
 
-boolean handle_command(String cmd) {
+boolean check_for_test_harness(void) {
+  boolean should_test = true;
+  for (int i=0; i < NUM_INPUTS; i++) {
+    int toggle_pin = pinNumbers[i];
+    // skip buttons for test detection.
+    if (toggle_pin == 6 || toggle_pin == 7 || toggle_pin == 8 || toggle_pin == 12 || toggle_pin == 13 || toggle_pin == 15) {
+      continue;
+    }
+    int sense_pin = testpin_map[toggle_pin];
+    boolean result = test_pin(toggle_pin, sense_pin);
+//    if (result) {
+//           Keyboard.println("result: ("+String(toggle_pin)+","+String(sense_pin)+") == true");
+//    }
+//    else {
+//           Keyboard.println("result: ("+String(toggle_pin)+","+String(sense_pin)+") == false");
+//    }
+    delay(25);
+    should_test &= result;
+  }
+  return should_test;
+}
+
+boolean test_board(void) {
+  boolean should_test = true;
+  for (int i=0; i < NUM_INPUTS; i++) {
+    int toggle_pin = pinNumbers[i];
+    int sense_pin = testpin_map[toggle_pin];
+    boolean result = test_pin(toggle_pin, sense_pin);
+    if (!result) {
+        Keyboard.println("testing input "+String(toggle_pin)+" ==> "+String(sense_pin)+"... FAILED");
+    }
+    delay(25);
+    should_test &= result;
+  }
+  return should_test;
+}
+
+void do_debug(void) {
   /* 
-   * Parse and execute commands. Return false when it's
-   * time to exit debug mode.
-   * TODO: rewrite this to use char* instead of string you lazybones
+   * is the test-harness hooked up?
+   * if so, do a test of all input pins
+   * and "type" the test result
    */
-  if (cmd.startsWith("LEDON:")) {
-    String led_num_substr = cmd.substring(cmd.indexOf(":")+1);
-    int led_num = parse_int_string(led_num_substr);
-    boolean led_status = led_on(led_num);
-    if (led_status) {
-      Serial.println(cmd+" ==> success");
-    }
-    else {
-      Serial.println(cmd+" ==> failure");
-    }
-  }
-  else if (cmd.startsWith("LEDOFF:")) {
-    String led_num_substr = cmd.substring(cmd.indexOf(":")+1);
-    int led_num = parse_int_string(led_num_substr);
-    boolean led_status = led_off(led_num);
-    if (led_status) {
-      Serial.println(cmd+" ==> success");
-    }
-    else {
-      Serial.println(cmd+" ==> failure");
-    }
-  }
-  else if (cmd.startsWith("TESTPIN:")) {
-    String both_pins_substr = cmd.substring(cmd.indexOf(":")+1);
-    int toggle_pin = parse_int_string(both_pins_substr.substring(0, both_pins_substr.indexOf(",")));
-    int sense_pin = parse_int_string(both_pins_substr.substring(both_pins_substr.indexOf(",")+1));
-    boolean testResult = test_pin(toggle_pin, sense_pin);
-    if (testResult) {
-      Serial.println(cmd+" ==> success");
-    }
-    else {
-      Serial.println(cmd+" ==> failure");
-    }
-  }
-  else if (cmd.startsWith("DANCE")) {
-    danceLeds();
-    Serial.println(cmd+" ==> success");
-  }
-  else if (cmd.equals("EXIT")) {
-    Serial.println(cmd+" ==> success");
-    return false;
-  }
-  return true;
+   init_testpin_map();
+   delay(DEBUG_WAIT_TIME_MS);
+   
+   if (!check_for_test_harness()) {
+     return;
+   }
+   else {
+     boolean result = test_board();
+     if (result) {
+       Keyboard.println("MaKey MaKey self-test result: PASSED :-)");
+     } else {
+       Keyboard.println("MaKey MaKey self-test result: FAILED!");
+     }
+   }
+
 }
 
-String get_command(void) {
-  /* 
-   * Read (until '\n') from serial and return the full command in a 
-   * String object
-   */
-  static char cmd_buffer[MAX_CMD_LENGTH];
-  memset(cmd_buffer, '\0', MAX_CMD_LENGTH);
-  int bytesRead = Serial.readBytesUntil('\n', cmd_buffer, MAX_CMD_LENGTH);
-  return String(cmd_buffer);
-}
-
-void listen_for_debug(void) {
-  /* 
-   * enable serial input and listen for a "DEBUG" command
-   * if none is recieved after DEBUG_WAIT_TIME_MS boot the sketch
-   * else jump to debug mode
-   */
-  int ms_waited = 0;
-  boolean in_debug_mode = false;
-  while (in_debug_mode || (ms_waited < DEBUG_WAIT_TIME_MS)) {
-    if (Serial.available() > 0) {
-      String cmd = get_command();
-      if (cmd == "DEBUG") {
-        in_debug_mode = true;
-        ms_waited = DEBUG_WAIT_TIME_MS+1; // don't let us hit this again.
-        Serial.println("DEBUGOK");
-      }
-      else {
-       in_debug_mode = handle_command(cmd);
-      }
-    }
-    delay(1);
-    ms_waited += 1;
-  }
-}

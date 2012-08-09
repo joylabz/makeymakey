@@ -139,12 +139,10 @@ void updateOutLEDs();
 void setup()
 {
   initialize_outputs();
-  debug_start();
-  listen_for_debug();
-  debug_end();
-  danceLeds();
   initializeArduino();
   initializeInputs();
+  do_debug();
+  danceLeds();
 }
 
 ////////////////////
@@ -170,7 +168,6 @@ void initializeArduino() {
 #ifdef DEBUG
   Serial.begin(9600);  // Serial for debugging
 #endif
-
   /* Set up input pins 
    DEactivate the internal pull-ups, since we're using external resistors */
   for (int i=0; i<NUM_INPUTS; i++)
