@@ -132,6 +132,106 @@ boolean test_board(void) {
   return should_test;
 }
 
+/*
+#define CPLED_UP                 0
+#define CPLED_DOWN               1
+#define CPLED_LEFT               2
+#define CPLED_RIGHT              3
+#define CPLED_SPACE              4
+#define CPLED_CLICK              5
+*/
+
+int update_finger_state(int test_input, int current_state) {
+  if (inputs[test_input].pressed) {
+    return current_state+1;
+  }
+  else {
+    return current_state;
+  }
+}
+
+boolean do_finger_test(void) {
+  current_state = WAITING_FOR_UP;
+  int ms_waited_for_fingers = FINGER_TEST_WAIT_TIME;
+  
+  while (ms_waited_for_fingers-- > 0) {
+      updateMeasurementBuffers();
+      updateBufferSums();
+      updateBufferIndex();
+      updateInputStates();
+      sendMouseButtonEvents();
+      sendMouseMovementEvents();
+      cycleLEDs();
+      updateOutLEDs();
+
+      switch (current_state) {
+        case WAITING_FOR_UP:
+          cpled_set(charlieplexed_leds[CPLED_UP], HIGH);
+          current_state = (state) update_finger_state(0, current_state); // UP
+          break;
+        case WAITING_FOR_DOWN:
+          cpled_set(charlieplexed_leds[CPLED_DOWN], HIGH);
+          current_state = (state) update_finger_state(1, current_state); // DOWN
+          break;
+        case WAITING_FOR_LEFT:
+          cpled_set(charlieplexed_leds[CPLED_LEFT], HIGH);
+          current_state = (state) update_finger_state(2, current_state); // LEFT
+          break;       
+        case WAITING_FOR_RIGHT:
+          cpled_set(charlieplexed_leds[CPLED_RIGHT], HIGH);
+          current_state = (state) update_finger_state(3, current_state); // RIGHT
+          break;         
+        case WAITING_FOR_SPACE:
+          cpled_set(charlieplexed_leds[CPLED_SPACE], HIGH);
+          current_state = (state) update_finger_state(4, current_state); // SPACE
+          break;           
+        case WAITING_FOR_CLICK:
+          cpled_set(charlieplexed_leds[CPLED_CLICK], HIGH);
+          current_state = (state) update_finger_state(5, current_state); // UP
+          break;
+        case MAX_STATES:
+          return true;
+      }
+      delay(1);
+  }
+  return false;
+}
+
+void failure_waggle(void) {
+  int waggle_time = 200;
+  // WIGGLE
+  for(int i=0; i<20; i++)
+  {
+    // SPACE
+    cpled_set(charlieplexed_leds[CPLED_SPACE], HIGH);
+    delay(waggle_time);    
+
+    // CLICK
+    cpled_set(charlieplexed_leds[CPLED_CLICK], HIGH);
+    delay(waggle_time);    
+  }
+  
+  set_highz(inputLED_a);
+  set_highz(inputLED_b);
+  set_highz(inputLED_c);
+}
+
+void success_back_leds(void) {
+  for(int i=0; i<3; i++) {
+    digitalWrite(outputK, HIGH);
+    TXLED1;
+    digitalWrite(outputM, HIGH);
+    RXLED1;
+    delay(200);
+    
+    digitalWrite(outputK, LOW);
+    TXLED0;
+    digitalWrite(outputM, LOW);
+    RXLED0;
+    delay(200);
+  }  
+}
+
 void do_debug(void) {
   /* 
    * is the test-harness hooked up?
@@ -140,18 +240,21 @@ void do_debug(void) {
    */
    init_testpin_map();
    delay(DEBUG_WAIT_TIME_MS);
-   
    if (!check_for_test_harness()) {
      return;
    }
    else {
-     boolean result = test_board();
-     if (result) {
+     success_back_leds();
+     boolean finger_test_result = do_finger_test();
+     if (finger_test_result) {
        Keyboard.println("MaKey MaKey self-test result: PASSED :-)");
      } else {
        Keyboard.println("MaKey MaKey self-test result: FAILED!");
+       failure_waggle();
      }
    }
-
 }
+
+ 
+
 
