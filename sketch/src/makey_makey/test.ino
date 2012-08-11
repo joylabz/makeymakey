@@ -313,20 +313,20 @@ void do_debug(void) {
      boolean finger_test_result = do_finger_test();
      if (finger_test_result) {
        EEPROM.write(EEPROM_TESTRESULT_ADDRESS, 1);
+       success_waggle();
        for (int i=0; i<50; i++) {
          Keyboard.print("+");
-         delay(10);
+         delay(25);
        }
        Keyboard.println(" PASS :-)\n");
-       success_waggle();      
      } else {
        EEPROM.write(EEPROM_TESTRESULT_ADDRESS, 0);
+       failure_waggle();
        for (int i=0; i<70; i++) {
          Keyboard.print("-");
-         delay(10);
+         delay(25);
        }
        Keyboard.println("FAIL!!!!!!!!\n");
-       failure_waggle();
      }
    }
 }
