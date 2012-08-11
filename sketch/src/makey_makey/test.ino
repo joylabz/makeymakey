@@ -313,11 +313,19 @@ void do_debug(void) {
      boolean finger_test_result = do_finger_test();
      if (finger_test_result) {
        EEPROM.write(EEPROM_TESTRESULT_ADDRESS, 1);
-       Keyboard.println("MaKey MaKey self-test result: PASSED :-)\n");
+       for (int i=0; i<50; i++) {
+         Keyboard.print("+");
+         delay(10);
+       }
+       Keyboard.println(" PASS :-)\n");
        success_waggle();      
      } else {
        EEPROM.write(EEPROM_TESTRESULT_ADDRESS, 0);
-       Keyboard.println("WARNING: MaKey MaKey self-test result: FAILED!!!!!\n");
+       for (int i=0; i<70; i++) {
+         Keyboard.print("-");
+         delay(10);
+       }
+       Keyboard.println("FAIL!!!!!!!!\n");
        failure_waggle();
      }
    }
