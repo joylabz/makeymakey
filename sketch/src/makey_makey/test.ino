@@ -1,6 +1,33 @@
 #include "test.h"
+#include <EEPROM.h>
 
 int testpin_map[24];
+
+void updateInputStatesNoPress(void) {
+  inputChanged = false;
+  for (int i=0; i<NUM_INPUTS; i++) {
+    inputs[i].prevPressed = inputs[i].pressed; // store previous pressed state (only used for mouse buttons)
+    if (inputs[i].pressed) {
+      if (inputs[i].bufferSum < releaseThreshold) {  
+        inputChanged = true;
+        inputs[i].pressed = false;
+        if (inputs[i].isMouseMotion) {  
+          mouseHoldCount[i] = 0;  // input becomes released, reset mouse hold
+        }
+      }
+      else if (inputs[i].isMouseMotion) {  
+        mouseHoldCount[i]++; // input remains pressed, increment mouse hold
+      }
+    } 
+    else if (!inputs[i].pressed) {
+      if (inputs[i].bufferSum > pressThreshold) {  // input becomes pressed
+        inputChanged = true;
+        inputs[i].pressed = true; 
+      }
+    }
+  }
+}
+
 
 boolean test_pin(int toggle_pin, int sense_pin) {
   boolean return_val = true;
@@ -132,15 +159,6 @@ boolean test_board(void) {
   return should_test;
 }
 
-/*
-#define CPLED_UP                 0
-#define CPLED_DOWN               1
-#define CPLED_LEFT               2
-#define CPLED_RIGHT              3
-#define CPLED_SPACE              4
-#define CPLED_CLICK              5
-*/
-
 int update_finger_state(int test_input, int current_state) {
   if (inputs[test_input].pressed) {
     return current_state+1;
@@ -158,12 +176,11 @@ boolean do_finger_test(void) {
       updateMeasurementBuffers();
       updateBufferSums();
       updateBufferIndex();
-      updateInputStates();
-      sendMouseButtonEvents();
-      sendMouseMovementEvents();
+      updateInputStatesNoPress();
       cycleLEDs();
       updateOutLEDs();
 
+      int prevstate = current_state;
       switch (current_state) {
         case WAITING_FOR_UP:
           cpled_set(charlieplexed_leds[CPLED_UP], HIGH);
@@ -192,15 +209,20 @@ boolean do_finger_test(void) {
         case MAX_STATES:
           return true;
       }
+      // if they just touched a new pad
+      // give them a little more time
+      if (current_state != prevstate) {
+          ms_waited_for_fingers+=FINGER_TEST_TOUCH_BONUS_MS;
+      }  
       delay(1);
   }
   return false;
 }
 
 void failure_waggle(void) {
-  int waggle_time = 200;
+  int waggle_time = BLINK_DURATION_MS;
   // WIGGLE
-  for(int i=0; i<20; i++)
+  for(int i=0; i<FAILURE_BLINK_COUNT; i++)
   {
     // SPACE
     cpled_set(charlieplexed_leds[CPLED_SPACE], HIGH);
@@ -216,19 +238,49 @@ void failure_waggle(void) {
   set_highz(inputLED_c);
 }
 
+void success_waggle(void) {
+ int waggle_duration = 400; 
+ for (int i=0; i<SUCCESS_BLINK_COUNT; i++) {
+   int ms_lit = BLINK_DURATION_MS;
+   int per_led_delay_microseconds = 1000/NUM_CHARLIEPLEXED_LEDS;
+   
+   //on
+   while (ms_lit-- > 0) {
+       cpled_set(charlieplexed_leds[CPLED_UP], HIGH);
+       delayMicroseconds(per_led_delay_microseconds);
+       cpled_set(charlieplexed_leds[CPLED_DOWN], HIGH);
+       delayMicroseconds(per_led_delay_microseconds);
+       cpled_set(charlieplexed_leds[CPLED_LEFT], HIGH);
+       delayMicroseconds(per_led_delay_microseconds);
+       cpled_set(charlieplexed_leds[CPLED_RIGHT], HIGH);
+       delayMicroseconds(per_led_delay_microseconds);
+       cpled_set(charlieplexed_leds[CPLED_CLICK], HIGH);
+       delayMicroseconds(per_led_delay_microseconds);
+       cpled_set(charlieplexed_leds[CPLED_SPACE], HIGH);
+       delayMicroseconds(per_led_delay_microseconds);   
+   }
+   
+   //off
+   set_highz(inputLED_a);
+   set_highz(inputLED_b);
+   set_highz(inputLED_c);
+   delay(waggle_duration);
+ }
+}
+
 void success_back_leds(void) {
-  for(int i=0; i<3; i++) {
+  for(int i=0; i<SUCCESS_BLINK_COUNT; i++) {
     digitalWrite(outputK, HIGH);
     TXLED1;
     digitalWrite(outputM, HIGH);
     RXLED1;
-    delay(200);
+    delay(BLINK_DURATION_MS);
     
     digitalWrite(outputK, LOW);
     TXLED0;
     digitalWrite(outputM, LOW);
     RXLED0;
-    delay(200);
+    delay(BLINK_DURATION_MS);
   }  
 }
 
@@ -247,9 +299,12 @@ void do_debug(void) {
      success_back_leds();
      boolean finger_test_result = do_finger_test();
      if (finger_test_result) {
-       Keyboard.println("MaKey MaKey self-test result: PASSED :-)");
+       EEPROM.write(EEPROM_TESTRESULT_ADDRESS, 1);
+       Keyboard.println("MaKey MaKey self-test result: PASSED :-)\n");
+       success_waggle();      
      } else {
-       Keyboard.println("MaKey MaKey self-test result: FAILED!");
+       EEPROM.write(EEPROM_TESTRESULT_ADDRESS, 0);
+       Keyboard.println("MaKey MaKey self-test result: FAILED!\n");
        failure_waggle();
      }
    }
