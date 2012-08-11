@@ -161,7 +161,20 @@ boolean test_board(void) {
 
 int update_finger_state(int test_input, int current_state) {
   if (inputs[test_input].pressed) {
-    return current_state+1;
+    switch (current_state) {
+      case WAITING_FOR_UP:
+        return WAITING_FOR_LEFT;
+      case WAITING_FOR_LEFT:
+        return WAITING_FOR_DOWN;
+      case WAITING_FOR_DOWN:
+        return WAITING_FOR_RIGHT;
+      case WAITING_FOR_RIGHT:
+        return WAITING_FOR_SPACE;
+      case WAITING_FOR_SPACE:
+        return WAITING_FOR_CLICK;
+      case WAITING_FOR_CLICK:
+        return MAX_STATES; 
+    }
   }
   else {
     return current_state;
@@ -304,7 +317,7 @@ void do_debug(void) {
        success_waggle();      
      } else {
        EEPROM.write(EEPROM_TESTRESULT_ADDRESS, 0);
-       Keyboard.println("MaKey MaKey self-test result: FAILED!\n");
+       Keyboard.println("WARNING: MaKey MaKey self-test result: FAILED!!!!!\n");
        failure_waggle();
      }
    }
