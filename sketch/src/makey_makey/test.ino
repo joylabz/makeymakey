@@ -160,7 +160,18 @@ boolean test_board(void) {
 }
 
 int update_finger_state(int test_input, int current_state) {
-  if (inputs[test_input].pressed) {
+  boolean test_input_only_is_pressed = true;
+  
+  for (int i = 0; i < 6; i++) { // TBW: fix this
+      if (i == test_input) {
+        test_input_only_is_pressed &= (inputs[i].pressed);
+      }
+      else {
+        test_input_only_is_pressed &= (!inputs[i].pressed);
+      }
+    }
+  
+  if (test_input_only_is_pressed) {
     switch (current_state) {
       case WAITING_FOR_UP:
         return WAITING_FOR_LEFT;
@@ -186,13 +197,16 @@ boolean do_finger_test(void) {
   int ms_waited_for_fingers = FINGER_TEST_WAIT_TIME;
   
   while (ms_waited_for_fingers-- > 0) {
-      updateMeasurementBuffers();
-      updateBufferSums();
-      updateBufferIndex();
-      updateInputStatesNoPress();
-      cycleLEDs();
-      updateOutLEDs();
-
+      // sample a few times so we pick up other buttons too
+      // this way we can detect shorts on them
+      for (int i=0; i < 2; i++) { 
+          updateMeasurementBuffers();
+          updateBufferSums();
+          updateBufferIndex();
+          updateInputStatesNoPress();
+          cycleLEDs();
+          updateOutLEDs();
+      }
       int prevstate = current_state;
       switch (current_state) {
         case WAITING_FOR_UP:
