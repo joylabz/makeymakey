@@ -56,7 +56,6 @@
 #define CPLED_CLICK              5
 
 #include "settings.h"
-#include "test.h"
 #include "common.h"
 #include "charlie.h"
 
@@ -141,7 +140,6 @@ void setup()
   initialize_outputs();
   initializeArduino();
   initializeInputs();
-  do_debug();
   danceLeds();
 }
 
